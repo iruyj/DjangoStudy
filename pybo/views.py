@@ -4,14 +4,25 @@ from django.http import HttpResponse
 
 from pybo.forms import QuestionForm, AnswerForm
 from pybo.models import Question, Answer
+from django.core.paginator import Paginator
 
 
 def index(request):
     """
     pybo 목록 출력
     """
+    # 입력 파라미터 - GET 방식으로 호출된 URL에서 page값을 가져옴/디폴트=1
+    page = request.GET.get('page','1')
+    # 조회 
     question_list = Question.objects.order_by('-create_date')
-    context = {'question_list' : question_list}
+    
+    #페이징처리
+    paginator = Paginator(question_list,10) # 페이지당 10개씩
+    page_obj = paginator.get_page(page)
+    # paginator를 이용하여 요청된 페이지(page)에 해당되는 페이징 객체(page_obj)를 생성
+    # 이렇게 하면 장고 내부적으로는 데이터 전체를 조회하지 않고 해당 페이지의 데이터만 조회하도록 쿼리가 변경됨
+
+    context = {'question_list' : page_obj} ## question_list는 페이징 객체(page_obj)
     return render(request, 'pybo/question_list.html', context)
 
 def detail(request, question_id):
