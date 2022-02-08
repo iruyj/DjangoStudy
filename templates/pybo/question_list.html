@@ -19,7 +19,11 @@
                 {{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}
             </td>
             <td>
+{#              게시물 제목 (답변개수)#}
                 <a href="{% url 'pybo:detail' question.id %}">{{ question.subject }}</a>
+                {% if question.answer_set.count > 0 %}
+                <span class="text-danger small m1-2">{{ question.answer_set.count }}</span>
+                {% endif %}
             </td>
             <td>{{ question.create_date }}</td>
         </tr>
